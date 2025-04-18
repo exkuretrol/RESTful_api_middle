@@ -86,12 +86,9 @@ class AdminUserLeaveRequestListAPIView(ListAPIView):
     A viewset for viewing LeaveRequest instances.
     """
 
-    queryset = LeaveRequest.objects.all()
+    queryset = LeaveRequest.objects.filter(status=LeaveRequest.StatusChoices.SUBMITTED).order_by("uuid")
     serializer_class = LeaveRequestSerializer
     permission_classes = [IsAdminUser]
-
-    def get_queryset(self):
-        return LeaveRequest.objects.all()
 
 
 class LeaveRequestApproveRejectAPIView(UpdateAPIView):

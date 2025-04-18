@@ -1,4 +1,6 @@
-@access_token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ0OTYwNjQ1LCJpYXQiOjE3NDQ5NTcwNDUsImp0aSI6IjBjNGMxNjA5ZmM1ZTQzMDNiMGM2ZGRiY2E1NWVhM2ZlIiwidXNlcl9pZCI6MzV9.ue_oojN2SpeLeh7MShBcBUEQ6CI8D3HzwA0Bx9dBaUI
+@access_token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ0OTYyOTk4LCJpYXQiOjE3NDQ5NTkzOTgsImp0aSI6ImQ2Y2RhMTA5Y2EzZjQ5Mzk4NTk0ZWNhZmRkNzVjYTNhIiwidXNlcl9pZCI6Mjl9.6Jj5fErw62faBM8RlTvIIac10FjJ_I9L8klezQr3qU4
+@admin_access_token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ0OTYwNjQ1LCJpYXQiOjE3NDQ5NTcwNDUsImp0aSI6IjBjNGMxNjA5ZmM1ZTQzMDNiMGM2ZGRiY2E1NWVhM2ZlIiwidXNlcl9pZCI6MzV9.ue_oojN2SpeLeh7MShBcBUEQ6CI8D3HzwA0Bx9dBaUI
+@request_uuid = 56cbba5d-d7c5-4f54-be04-a7fcc091b298
 ### get access token
 POST http://localhost:8000/api/token
 Content-Type: application/json
@@ -8,18 +10,28 @@ Content-Type: application/json
     "password": "adminpassword"
 }
 
+### get get normal user access token
+POST http://localhost:8000/api/token
+Content-Type: application/json
+
+{
+    "username": "aliquam975",
+    "password": "password"
+}
+
+
 ### get user-related leave requests
 GET http://localhost:8000/api/leaves
-Authorization: Bearer {{access_token}}
+Authorization: Bearer {{ access_token }}
 
 
 ### show all leave categories
 GET http://localhost:8000/api/leaves/categories
-Authorization: Bearer {{access_token}}
+Authorization: Bearer {{ access_token }}
 
 ### create a new leave request
 POST http://localhost:8000/api/leaves
-Authorization: Bearer {{access_token}}
+Authorization: Bearer {{ access_token }}
 Content-Type: application/json
 
 {
@@ -30,7 +42,7 @@ Content-Type: application/json
 
 ### create another new leave request
 POST http://localhost:8000/api/leaves/
-Authorization: Bearer {{access_token}}
+Authorization: Bearer {{ access_token }}
 Content-Type: application/json
 
 {
@@ -39,13 +51,17 @@ Content-Type: application/json
     "category": 20
 }
 
+### get all pending (SUBMITTED) leave requests
+GET http://localhost:8000/api/manage/leaves
+Authorization: Bearer {{ admin_access_token }}
+
 ### approve a leave request
-PUT http://localhost:8000/api/manage/leaves/56cbba5d-d7c5-4f54-be04-a7fcc091b298/approve/
-Authorization: Bearer {{access_token}}
+PUT http://localhost:8000/api/manage/leaves/{{ request_uuid }}/approve/
+Authorization: Bearer {{ admin_access_token }}
 
 ### reject a leave request
-PUT http://localhost:8000/api/manage/leaves/56cbba5d-d7c5-4f54-be04-a7fcc091b298/reject/
-Authorization: Bearer {{access_token}}
+PUT http://localhost:8000/api/manage/leaves/{{ request_uuid }}/reject/
+Authorization: Bearer {{ admin_access_token }}
 Content-Type: application/json
 
 {
