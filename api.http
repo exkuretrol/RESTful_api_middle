@@ -1,4 +1,4 @@
-@access_token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ0OTU4MzM4LCJpYXQiOjE3NDQ5NTQ3MzgsImp0aSI6IjAyMTE0MWNlNzQ5MDRmMTc5ZTUwZjk1NWYwYjYyOGIxIiwidXNlcl9pZCI6MzV9.0BqKPPBMTbDboXrYi1kIUamlIudUj-_hrECeUsPO3uM
+@access_token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ0OTYwNjQ1LCJpYXQiOjE3NDQ5NTcwNDUsImp0aSI6IjBjNGMxNjA5ZmM1ZTQzMDNiMGM2ZGRiY2E1NWVhM2ZlIiwidXNlcl9pZCI6MzV9.ue_oojN2SpeLeh7MShBcBUEQ6CI8D3HzwA0Bx9dBaUI
 ### get access token
 POST http://localhost:8000/api/token
 Content-Type: application/json
@@ -40,5 +40,14 @@ Content-Type: application/json
 }
 
 ### approve a leave request
-PUT http://localhost:8000/api/leaves/56cbba5d-d7c5-4f54-be04-a7fcc091b298/approve/
+PUT http://localhost:8000/api/manage/leaves/56cbba5d-d7c5-4f54-be04-a7fcc091b298/approve/
 Authorization: Bearer {{access_token}}
+
+### reject a leave request
+PUT http://localhost:8000/api/manage/leaves/56cbba5d-d7c5-4f54-be04-a7fcc091b298/reject/
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+    "comment": "I don't like this leave request"
+}

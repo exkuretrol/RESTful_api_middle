@@ -34,7 +34,6 @@ class LeaveCategoryListAPIView(ListAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-
         is_female = self.request.user.gender == User.SexChoices.FEMALE
         if not is_female:
             return super().get_queryset()
@@ -78,9 +77,21 @@ class NormalUserLeaveRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
     lookup_url_kwarg = "request_uuid"
 
     def get_serializer_class(self):
-        if self.action in ["update"]:
+        if self.request.method in ["PUT", "PATCH"]:
             return LeaveRequestCreateUpdateSerializer
         return super().get_serializer_class()
+
+class AdminUserLeaveRequestListAPIView(ListAPIView):
+    """
+    A viewset for viewing LeaveRequest instances.
+    """
+
+    queryset = LeaveRequest.objects.all()
+    serializer_class = LeaveRequestSerializer
+    permission_classes = [IsAdminUser]
+
+    def get_queryset(self):
+        return LeaveRequest.objects.all()
 
 
 class LeaveRequestApproveRejectAPIView(UpdateAPIView):
@@ -95,5 +106,18 @@ class LeaveRequestApproveRejectAPIView(UpdateAPIView):
     lookup_url_kwarg = "request_uuid"
     leave_request_action = None
 
-    def get_serializer_class(self):
-        return LeaveRequestApproveRejectSerializer(action=self.leave_request_action)
+    def __init__(self, **kwargs):
+        self.leave_request_action = kwargs.get("leave_request_action")
+        super().__init__(**kwargs)
+
+    def perform_update(self, serializer):
+        update_kwargs = {
+            "process_user": self.request.user,
+        }
+        if self.leave_request_action == "approve":
+            update_kwargs["status"] = LeaveRequest.StatusChoices.APPROVED
+        elif self.leave_request_action == "reject":
+            update_kwargs["status"] = LeaveRequest.StatusChoices.REJECTED
+        serializer.save(**update_kwargs) 
+        
+

@@ -70,23 +70,15 @@ class LeaveRequestApproveRejectSerializer(
     Serializer for LeaveRequest model. Used for approving leave requests.
     """
 
-    per_day_entries = LeaveRequestPerDaySerializer(many=True, read_only=True)
     total_leave_hours = serializers.SerializerMethodField()
 
     def update(self, instance, validated_data):
         with transaction.atomic():
+            # TODO: check the supervisor is the same department as the request_user
             for attr, value in validated_data.items():
                 setattr(instance, attr, value)
-            if self.action == "approve":
-                instance.status = LeaveRequest.StatusChoices.APPROVED
-            elif self.action == "reject":
-                instance.status = LeaveRequest.StatusChoices.REJECTED
 
         return instance
-
-    def __init__(self, action: Literal["approve", "reject"], *args, **kwargs):
-        self.action = action
-        super().__init__(*args, **kwargs)
 
     class Meta:
         model = LeaveRequest

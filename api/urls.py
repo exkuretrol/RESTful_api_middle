@@ -21,12 +21,17 @@ urlpatterns = [
         name="leave-categories-list",
     ),
     path(
-        "leaves/<uuid:request_uuid>/approve/",
+        "manage/leaves/",
+        views.AdminUserLeaveRequestListAPIView.as_view(),
+        name="admin-user-leaves-list",
+    ),
+    path(
+        "manage/leaves/<uuid:request_uuid>/approve/",
         views.LeaveRequestApproveRejectAPIView.as_view(leave_request_action="approve"),
         name="leave-request-approve",
     ),
     path(
-        "leaves/<uuid:request_uuid>/reject/",
+        "manage/leaves/<uuid:request_uuid>/reject/",
         views.LeaveRequestApproveRejectAPIView.as_view(leave_request_action="reject"),
         name="leave-request-reject",
     ),
