@@ -3,6 +3,7 @@ from django.contrib import admin
 from .models import (
     LeaveCategory,
     LeaveRequest,
+    LeaveRequestPerDay,
     RoleLeavePolicy,
     UserLeaveBalance,
 )
@@ -37,10 +38,16 @@ class UserLeaveBalanceAdmin(admin.ModelAdmin):
     ordering = ("user", "category")
 
 
+class LeaveRequestPerDayInline(admin.TabularInline):
+    model = LeaveRequestPerDay
+    extra = 0
+
+
 @admin.register(LeaveRequest)
 class LeaveRequestAdmin(admin.ModelAdmin):
     list_display = (
         "category",
+        "reason",
         "request_user",
         "process_user",
         "effective_start_datetime",
@@ -48,6 +55,8 @@ class LeaveRequestAdmin(admin.ModelAdmin):
         "status",
         "created_at",
         "processed_at",
+        "comment",
     )
     list_filter = ("status", "category", "request_user", "process_user")
+    inlines = [LeaveRequestPerDayInline]
     ordering = ("-created_at",)

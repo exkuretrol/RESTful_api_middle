@@ -15,6 +15,7 @@ ROLES = [
     ("員工", False),
     ("主管", True),
 ]
+WORK_HOURS = 8
 
 
 class Command(BaseCommand):
@@ -196,6 +197,8 @@ class Command(BaseCommand):
                     if default_amount > 0:
                         if random.random() < 0.5:
                             default_amount //= random.randint(2, 3)
+
+                    default_amount *= WORK_HOURS
 
                     user_leave_balance, created = (
                         UserLeaveBalance.objects.get_or_create(

@@ -1,0 +1,44 @@
+@access_token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ0OTU4MzM4LCJpYXQiOjE3NDQ5NTQ3MzgsImp0aSI6IjAyMTE0MWNlNzQ5MDRmMTc5ZTUwZjk1NWYwYjYyOGIxIiwidXNlcl9pZCI6MzV9.0BqKPPBMTbDboXrYi1kIUamlIudUj-_hrECeUsPO3uM
+### get access token
+POST http://localhost:8000/api/token
+Content-Type: application/json
+
+{
+    "username": "admin",
+    "password": "adminpassword"
+}
+
+### get user-related leave requests
+GET http://localhost:8000/api/leaves
+Authorization: Bearer {{access_token}}
+
+
+### show all leave categories
+GET http://localhost:8000/api/leaves/categories
+Authorization: Bearer {{access_token}}
+
+### create a new leave request
+POST http://localhost:8000/api/leaves
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+    "effective_start_datetime": "2025-04-18T12:00:00+08:00",
+    "effective_end_datetime": "2025-04-18T18:00:00+08:00",
+    "category": 20
+}
+
+### create another new leave request
+POST http://localhost:8000/api/leaves/
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+    "effective_start_datetime": "2025-04-21T09:00:00+08:00",
+    "effective_end_datetime": "2025-04-25T18:00:00+08:00",
+    "category": 20
+}
+
+### approve a leave request
+PUT http://localhost:8000/api/leaves/56cbba5d-d7c5-4f54-be04-a7fcc091b298/approve/
+Authorization: Bearer {{access_token}}
