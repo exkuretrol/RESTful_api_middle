@@ -72,6 +72,7 @@ class LeaveRequest(models.Model):
         "狀態", choices=StatusChoices.choices, default=StatusChoices.SUBMITTED
     )
     comment = models.TextField("附言", blank=True, null=True)
+    reason = models.TextField("請假原因", blank=True, null=True)
 
     request_user = models.ForeignKey(
         User,
@@ -83,6 +84,7 @@ class LeaveRequest(models.Model):
         User,
         on_delete=models.SET_NULL,
         null=True,
+        blank=True,
         related_name="processed_leaves",
         verbose_name="審核主管",
     )
@@ -104,3 +106,9 @@ class LeaveRequestPerDay(models.Model):
     date = models.DateField("請假日期")
     start_time = models.TimeField("開始時間")
     end_time = models.TimeField("結束時間")
+
+    def leave_hours(self):
+        """
+        計算請假時數
+        """
+        return self.end_time.hour - self.start_time.hour
