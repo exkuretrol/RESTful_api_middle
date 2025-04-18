@@ -209,3 +209,7 @@ class Command(BaseCommand):
                         logger.info(
                             f"Created user leave balance: {user_leave_balance.user} - {user_leave_balance.category} ({user_leave_balance.remaining_amount})"
                         )
+
+            # TODO: need to implement later
+            # change all is_supervisor users to is_staff in User model
+            User.objects.filter(role__is_supervisor=True).update(is_staff=True)
