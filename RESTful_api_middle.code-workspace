@@ -1,0 +1,47 @@
+{
+  "folders": [
+    {
+      "path": "."
+    }
+  ],
+  "settings": {
+    "[html][django-html][javascript][scss]": {
+      "editor.formatOnSave": false
+    },
+    "[python]": {
+      "editor.defaultFormatter": "ms-python.black-formatter",
+      "editor.formatOnSave": true,
+      "editor.codeActionsOnSave": {
+        "source.organizeImports": "explicit"
+      }
+    },
+    "black-formatter.args": ["--config", "./pyproject.toml"],
+    "files.associations": {
+      "*.html": "django-html",
+      "*.js": "javascript",
+      ".env": "dotenv"
+    },
+    "todohighlight.exclude": [
+      "**/node_modules/**",
+      "**/bower_components/**",
+      "**/dist/**",
+      "**/build/**",
+      "**/.vscode/**",
+      "**/.github/**",
+      "**/_output/**",
+      "**/*.min.*",
+      "**/*.map",
+      "**/.next/**",
+      "**/static/**",
+      "**/staticfiles/**",
+      "**/migrations/**"
+    ],
+    "terminal.integrated.cwd": "${workspaceFolder}",
+    "makefile.configureOnOpen": false,
+    "github.copilot.enable": {
+      "*": true,
+      "dotenv": false
+    },
+    "terminal.integrated.environmentChangesIndicator": "off"
+  }
+}
