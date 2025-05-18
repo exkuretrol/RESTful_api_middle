@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     # local apps
     "core",
     "api",
+    "frontend",
     # third-party apps
     "rest_framework",
     "django_filters",
@@ -71,7 +72,6 @@ ROOT_URLCONF = "core.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -118,6 +118,9 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 AUTH_USER_MODEL = "core.User"
+LOGIN_URL = "frontend:login"
+LOGIN_REDIRECT_URL = "frontend:home"
+LOGOUT_REDIRECT_URL = "frontend:home"
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/

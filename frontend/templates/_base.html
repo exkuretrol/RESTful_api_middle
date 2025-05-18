@@ -1,0 +1,36 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="zh-Hants">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script type="text/javascript" src="{% static 'js/jquery.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/moment.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/daterangepicker.min.js' %}"></script>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/daterangepicker.css' %}" />
+    {% block head %}
+    {% endblock head %}
+</head>
+<body>
+    {% with view_name=request.resolver_match.view_name %}
+        {% if view_name != "frontend:login" %}
+            {% if user.is_authenticated %}
+                <p>{{ user.username }}{{ user.department }} {{ user.role }}</p>
+                <form action="{% url 'frontend:logout' %}" method="post">
+                    {% csrf_token %}
+                    <input type="submit" value="登出">
+                </form>
+            {% else %}
+                <a href="{% url 'frontend:login' %}">登入</a>
+            {% endif %}
+            <hr>
+        {% endif %}
+    
+    {% endwith %}
+
+    {% block content %}
+    {% endblock content %}
+</body>
+</html>

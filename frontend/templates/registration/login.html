@@ -1,0 +1,28 @@
+{% extends "_base.html" %}
+{% block content %}
+    <ul>
+        <li><button name="supervisor_login">主管</button></li>
+        <li><button name="employee_login">員工</button></li>
+    </ul>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">登入</button>
+    </form>
+{% endblock content %}
+{% block head %}
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const username_el = document.querySelector('input[name="username"]');
+        const password_el = document.querySelector('input[name="password"]');
+        password_el.value = "password";
+
+        document.querySelector('button[name="supervisor_login"]').addEventListener('click', function() {
+            username_el.value = "atque390";
+        });
+        document.querySelector('button[name="employee_login"]').addEventListener('click', function() {
+            username_el.value = "aut106";
+        });
+    });
+</script>
+{% endblock head %}

@@ -1,0 +1,32 @@
+{% extends "_base.html" %}
+
+{% block content %}
+    <ul id="leave-balance-list"></ul>
+    <hr>
+    <form id="leaves-form" action="" method="post">
+        {% csrf_token %}
+        {{ leave_requests_form.as_p }}
+        <label for="datetimes">請假時間：</label>
+        <input name="datetimes">
+        <input type="submit" value="送出">
+    </form>
+
+    <hr>
+    <table id="leave-table">
+        <thead>
+            <tr>
+                <th>時間</th>
+                <th>時數</th>
+                <th>類別</th>
+                <th>狀態</th>
+                <th>刪除</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+{% endblock content %}
+
+{% block head %}
+    {% include "heads/leaves_head.html" %}
+{% endblock head %}
