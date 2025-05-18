@@ -3,12 +3,12 @@ from rest_framework.routers import DefaultRouter
 
 from . import views
 
-appname = "api"
+app_name = "api"
 urlpatterns = [
     path(
         "leaves/",
         views.NormalUserLeaveRequestListCreateAPIView.as_view(),
-        name="normal-user-leaves-list",
+        name="normal-user-leave-request-list-create",
     ),
     path(
         "leaves/<uuid:request_uuid>/",
@@ -19,6 +19,11 @@ urlpatterns = [
         "leaves/categories/",
         views.LeaveCategoryListAPIView.as_view(),
         name="leave-categories-list",
+    ),
+    path(
+        "leaves/balance/",
+        views.UserLeaveBalanceListAPIView.as_view(),
+        name="user-leave-balance",
     ),
     path(
         "manage/leaves/",

@@ -91,6 +91,22 @@ class LeaveRequest(models.Model):
     created_at = models.DateTimeField("建立時間", auto_now_add=True)
     processed_at = models.DateTimeField("審核時間", null=True, blank=True)
 
+    def total_leave_hours(self):
+        """
+        計算請假時數
+        """
+        total_hours = 0
+        for entry in self.per_day_entries.all():
+            total_hours += entry.leave_hours()
+        return total_hours
+
+    class Meta:
+        ordering = ("effective_start_datetime",)
+
+
+LUNCH_BREAK_START = 12
+LUNCH_BREAK_END = 13
+
 
 class LeaveRequestPerDay(models.Model):
     """
@@ -111,4 +127,15 @@ class LeaveRequestPerDay(models.Model):
         """
         計算請假時數
         """
-        return self.end_time.hour - self.start_time.hour
+        start_hour = self.start_time.hour
+        end_hour = self.end_time.hour
+
+        # 如果請假時間跨越午休時間，則需要減去午休時間
+        if (
+            start_hour < LUNCH_BREAK_END
+            and end_hour > LUNCH_BREAK_START
+            and start_hour < LUNCH_BREAK_START
+        ):
+            return (LUNCH_BREAK_START - start_hour) + (end_hour - LUNCH_BREAK_END)
+        else:
+            return end_hour - start_hour

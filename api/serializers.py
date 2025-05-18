@@ -1,12 +1,8 @@
-from typing import Literal
-
 from django.db import transaction
 from django.utils import timezone
 from rest_framework import serializers
 
-from core.models import Department, Role, User
-
-from .models import LeaveCategory, LeaveRequest, LeaveRequestPerDay
+from .models import LeaveCategory, LeaveRequest, LeaveRequestPerDay, UserLeaveBalance
 
 
 class LeaveRequestPerDaySerializer(serializers.ModelSerializer):
@@ -39,7 +35,7 @@ class LeaveRequestSerializer(TotalLeaveHoursMixin, serializers.ModelSerializer):
     """
 
     per_day_entries = LeaveRequestPerDaySerializer(many=True, read_only=True)
-    total_leave_hours = serializers.SerializerMethodField()
+    status = serializers.CharField(source="get_status_display", read_only=True)
 
     class Meta:
         model = LeaveRequest
@@ -70,13 +66,14 @@ class LeaveRequestApproveRejectSerializer(
     Serializer for LeaveRequest model. Used for approving leave requests.
     """
 
-    total_leave_hours = serializers.SerializerMethodField()
-
     def update(self, instance, validated_data):
         with transaction.atomic():
             # TODO: check the supervisor is the same department as the request_user
             for attr, value in validated_data.items():
                 setattr(instance, attr, value)
+
+            # TODO: UserLeaveBalance should be updated here
+            # TODO: implement validation for the status
 
         return instance
 
@@ -116,6 +113,7 @@ class LeaveRequestApproveRejectSerializer(
 
 
 OFF_WORK_TIME = timezone.datetime.strptime("18:00", "%H:%M").time()
+WORK_TIME = timezone.datetime.strptime("09:00", "%H:%M").time()
 
 
 class LeaveRequestCreateUpdateSerializer(
@@ -132,16 +130,15 @@ class LeaveRequestCreateUpdateSerializer(
         with transaction.atomic():
             pass
 
-    def create(self, validated_data):
-        """
-        Create a new LeaveRequest instance.
-        """
+    def validate(self, attrs):
+        attrs = super().validate(attrs)
+        effective_start_datetime = attrs.get("effective_start_datetime")
+        effective_end_datetime = attrs.get("effective_end_datetime")
+        reason = attrs.get("reason", None)
+        if reason == "":
+            attrs.pop("reason", None)
 
-        # TODO: extract the validation logic to a separate function
-        effective_start_datetime = validated_data.get("effective_start_datetime")
-        effective_end_datetime = validated_data.get("effective_end_datetime")
-
-        if validated_data.get("per_day_entries", None):
+        if attrs.get("per_day_entries", None):
             raise serializers.ValidationError(
                 "LeaveRequestPerDay entries should not be provided during creation."
             )
@@ -151,12 +148,51 @@ class LeaveRequestCreateUpdateSerializer(
                 "Effective start datetime must be before effective end datetime."
             )
 
+        if (
+            effective_start_datetime.hour < WORK_TIME.hour
+            or effective_start_datetime.hour > OFF_WORK_TIME.hour
+        ):
+            raise serializers.ValidationError(
+                "Effective start datetime must be between 09:00 and 18:00."
+            )
+
+        if (
+            effective_end_datetime.hour < WORK_TIME.hour
+            or effective_end_datetime.hour > OFF_WORK_TIME.hour
+        ):
+            raise serializers.ValidationError(
+                "Effective end datetime must be between 09:00 and 18:00."
+            )
+
         if effective_start_datetime.minute != 0 or effective_end_datetime.minute != 0:
             raise serializers.ValidationError(
                 "Effective start and end datetimes must be on the hour."
             )
 
-        # TODO: add overlap check
+        user = self.context["request"].user
+
+        # overlap check
+        if LeaveRequestPerDay.objects.filter(
+            request__request_user=user,
+            date__range=(
+                effective_start_datetime.date(),
+                effective_end_datetime.date(),
+            ),
+            start_time__lt=effective_end_datetime.time(),
+            end_time__gt=effective_start_datetime.time(),
+        ).exists():
+            raise serializers.ValidationError(
+                "Leave request overlaps with an existing leave request."
+            )
+
+        return attrs
+
+    def create(self, validated_data):
+        """
+        Create a new LeaveRequest instance.
+        """
+        effective_start_datetime = validated_data.get("effective_start_datetime")
+        effective_end_datetime = validated_data.get("effective_end_datetime")
 
         with transaction.atomic():
             leave_request = LeaveRequest.objects.create(**validated_data)
@@ -197,6 +233,7 @@ class LeaveRequestCreateUpdateSerializer(
             "effective_start_datetime",
             "effective_end_datetime",
             "total_leave_hours",
+            "reason",
             "status",
         )
         extra_kwargs = {
@@ -215,3 +252,18 @@ class LeaveCategorySerializer(serializers.ModelSerializer):
         model = LeaveCategory
         fields = ("id", "name")
         extra_kwargs = {}
+
+
+class UserLeaveBalanceSerializer(serializers.ModelSerializer):
+    """
+    Serializer for UserLeaveBalance model.
+    """
+
+    category = LeaveCategorySerializer(read_only=True)
+
+    class Meta:
+        model = UserLeaveBalance
+        fields = (
+            "category",
+            "remaining_amount",
+        )

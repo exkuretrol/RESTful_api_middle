@@ -1,24 +1,21 @@
-from typing import Literal
-
-from django.db import transaction
-from django.shortcuts import render
-from rest_framework import viewsets
 from rest_framework.generics import (
     ListAPIView,
     ListCreateAPIView,
     RetrieveUpdateDestroyAPIView,
     UpdateAPIView,
+    RetrieveAPIView,
 )
 from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 
 from core.models import User
 
-from .models import LeaveCategory, LeaveRequest
+from .models import LeaveCategory, LeaveRequest, UserLeaveBalance
 from .serializers import (
     LeaveCategorySerializer,
     LeaveRequestApproveRejectSerializer,
     LeaveRequestCreateUpdateSerializer,
     LeaveRequestSerializer,
+    UserLeaveBalanceSerializer,
 )
 
 
@@ -38,6 +35,24 @@ class LeaveCategoryListAPIView(ListAPIView):
         if not is_female:
             return super().get_queryset()
         return LeaveCategory.objects.exclude(name="生理假")
+
+
+class UserLeaveBalanceListAPIView(ListAPIView):
+    """
+    A viewset for viewing UserLeaveBalance instances.
+    """
+
+    queryset = UserLeaveBalance.objects.all()
+    serializer_class = UserLeaveBalanceSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.gender == User.SexChoices.FEMALE:
+            return UserLeaveBalance.objects.filter(user=user)
+        return UserLeaveBalance.objects.filter(user=user).exclude(
+            category=LeaveCategory.objects.get(name="生理假")
+        )
 
 
 class NormalUserLeaveRequestListCreateAPIView(ListCreateAPIView):
@@ -81,12 +96,15 @@ class NormalUserLeaveRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
             return LeaveRequestCreateUpdateSerializer
         return super().get_serializer_class()
 
+
 class AdminUserLeaveRequestListAPIView(ListAPIView):
     """
     A viewset for viewing LeaveRequest instances.
     """
 
-    queryset = LeaveRequest.objects.filter(status=LeaveRequest.StatusChoices.SUBMITTED).order_by("uuid")
+    queryset = LeaveRequest.objects.filter(
+        status=LeaveRequest.StatusChoices.SUBMITTED
+    ).order_by("uuid")
     serializer_class = LeaveRequestSerializer
     permission_classes = [IsAdminUser]
 
@@ -115,6 +133,4 @@ class LeaveRequestApproveRejectAPIView(UpdateAPIView):
             update_kwargs["status"] = LeaveRequest.StatusChoices.APPROVED
         elif self.leave_request_action == "reject":
             update_kwargs["status"] = LeaveRequest.StatusChoices.REJECTED
-        serializer.save(**update_kwargs) 
-        
-
+        serializer.save(**update_kwargs)

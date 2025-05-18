@@ -1,5 +1,6 @@
-@access_token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ0OTYyOTk4LCJpYXQiOjE3NDQ5NTkzOTgsImp0aSI6ImQ2Y2RhMTA5Y2EzZjQ5Mzk4NTk0ZWNhZmRkNzVjYTNhIiwidXNlcl9pZCI6Mjl9.6Jj5fErw62faBM8RlTvIIac10FjJ_I9L8klezQr3qU4
-@admin_access_token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ0OTYwNjQ1LCJpYXQiOjE3NDQ5NTcwNDUsImp0aSI6IjBjNGMxNjA5ZmM1ZTQzMDNiMGM2ZGRiY2E1NWVhM2ZlIiwidXNlcl9pZCI6MzV9.ue_oojN2SpeLeh7MShBcBUEQ6CI8D3HzwA0Bx9dBaUI
+@access_token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ3NTU1MTgwLCJpYXQiOjE3NDc1NTE1ODAsImp0aSI6IjMyZWNkOTViNTllNTQ1MTJiNzg3YmUwMzMyMWJhNGUwIiwidXNlcl9pZCI6MzB9.Sx9HUIv67fyRVSphXDCBn5nOJO1LdYKcupCc5kxYQ1w
+@supervisor_access_token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ3NTU1MTYyLCJpYXQiOjE3NDc1NTE1NjIsImp0aSI6IjdjOWFiMGY1ZGRhNDQwOGU4MDk1MDMxMzBiMTRiZjk3IiwidXNlcl9pZCI6MzR9.jekU6gBJA43qf5lFKX5IesXKMT_VTPq7BuaUuK15458
+@admin_access_token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ3NTU0MjM1LCJpYXQiOjE3NDc1NTA2MzUsImp0aSI6IjZjYWZjMmEwOTNmYjQwYTE4ZjQxMzY1ZmIzMDEwMTBiIiwidXNlcl9pZCI6MzV9.OeKpvEq1ySwt_Rpi7Z6Ua3FFbre-I2EHoYNSZ5OEeMU
 @request_uuid = 56cbba5d-d7c5-4f54-be04-a7fcc091b298
 ### get access token
 POST http://localhost:8000/api/token
@@ -10,12 +11,23 @@ Content-Type: application/json
     "password": "adminpassword"
 }
 
+
+### get supervisor access token
+POST http://localhost:8000/api/token
+Content-Type: application/json
+
+{
+    "username": "atque390",
+    "password": "password"
+}
+
+
 ### get get normal user access token
 POST http://localhost:8000/api/token
 Content-Type: application/json
 
 {
-    "username": "aliquam975",
+    "username": "aut106",
     "password": "password"
 }
 
@@ -35,9 +47,9 @@ Authorization: Bearer {{ access_token }}
 Content-Type: application/json
 
 {
-    "effective_start_datetime": "2025-04-18T12:00:00+08:00",
-    "effective_end_datetime": "2025-04-18T18:00:00+08:00",
-    "category": 20
+    "effective_start_datetime": "2025-05-26T12:00:00+08:00",
+    "effective_end_datetime": "2025-05-26T18:00:00+08:00",
+    "category": 16
 }
 
 ### create another new leave request
